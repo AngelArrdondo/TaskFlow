@@ -6,3 +6,4 @@ taskflow-api/__pycache__/
 taskflow-api/**/__pycache__/
 taskflow-api/.env
 taskflow-frontend/node_modules/
+taskflow-api/venv/
