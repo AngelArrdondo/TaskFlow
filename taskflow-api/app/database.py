@@ -1,0 +1,17 @@
+import mysql.connector
+from mysql.connector import Error
+from app.config import db_config
+
+def get_db_connection():
+    try:
+        connection = mysql.connector.connect(**db_config)
+        return connection
+    except Error as e:
+        print(f"Error conectando a MySQL: {e}")
+        return None
+
+def close_connection(connection, cursor):
+    if cursor:
+        cursor.close()
+    if connection:
+        connection.close()
