@@ -1,4 +1,4 @@
-# TaskFlow API 🗂️
+# TaskFlow API 
 > Sistema de Gestión de Tareas Personales — REST API
 
 **Versión:** 1.0  
@@ -307,13 +307,13 @@ taskflow-api/
 
 ## Evidencia de pruebas
 
-- 📹 **Video demostración** (servidor, Postman y Swagger):  
+- **Video demostración** (servidor, Postman y Swagger):  
   https://drive.google.com/drive/folders/1TliMZm0xHtL4B8NKrH3zcbXI4DxKWRNC?usp=drive_link
 
-- 💻 **Repositorio GitHub**:  
+- **Repositorio GitHub**:  
   https://github.com/AngelArrdondo/TaskFlow.git
 
-- 📄 **Documentación Swagger (local)**:  
+- **Documentación Swagger (local)**:  
   http://localhost:8000/docs
 
 ### Pruebas realizadas
