@@ -9,6 +9,10 @@ const EtiquetaList = () => {
   const [showForm, setShowForm] = useState(false);
   const [nuevaEtiqueta, setNuevaEtiqueta] = useState('');
 
+  // Estado para edición
+  const [editandoId, setEditandoId] = useState(null);
+  const [nombreEditado, setNombreEditado] = useState('');
+
   useEffect(() => {
     cargarEtiquetas();
   }, []);
@@ -17,7 +21,13 @@ const EtiquetaList = () => {
     try {
       setLoading(true);
       const response = await etiquetaService.getAll();
-      setEtiquetas(response.data);
+
+      // Fix: manejar cualquier formato de respuesta
+      const etiquetasArray =
+        Array.isArray(response) ? response :
+        response.items || response.data || [];
+
+      setEtiquetas(etiquetasArray);
       setError('');
     } catch (err) {
       setError('Error al cargar las etiquetas');
@@ -38,6 +48,40 @@ const EtiquetaList = () => {
       cargarEtiquetas();
     } catch (err) {
       setError('Error al crear la etiqueta');
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (id) => {
+    if (window.confirm('¿Estás seguro de eliminar esta etiqueta?')) {
+      try {
+        await etiquetaService.delete(id);
+        cargarEtiquetas();
+      } catch (err) {
+        setError('Error al eliminar la etiqueta');
+        console.error(err);
+      }
+    }
+  };
+
+  const handleEditarClick = (etiqueta) => {
+    setEditandoId(etiqueta.id);
+    setNombreEditado(etiqueta.nombre);
+  };
+
+  const handleCancelarEdicion = () => {
+    setEditandoId(null);
+    setNombreEditado('');
+  };
+
+  const handleGuardarEdicion = async (id) => {
+    if (!nombreEditado.trim()) return;
+    try {
+      await etiquetaService.update(id, { nombre: nombreEditado });
+      setEditandoId(null);
+      cargarEtiquetas();
+    } catch (err) {
+      setError('Error al actualizar la etiqueta');
       console.error(err);
     }
   };
@@ -71,12 +115,63 @@ const EtiquetaList = () => {
       <div className="etiquetas-grid">
         {etiquetas.map(etiqueta => (
           <div key={etiqueta.id} className="etiqueta-card">
-            <span className="etiqueta-nombre">{etiqueta.nombre}</span>
-            <span className="etiqueta-fecha">
-              Creada: {new Date(etiqueta.created_at).toLocaleDateString()}
-            </span>
+
+            {editandoId === etiqueta.id ? (
+              // Modo edición
+              <div className="etiqueta-edit-form">
+                <input
+                  type="text"
+                  value={nombreEditado}
+                  onChange={(e) => setNombreEditado(e.target.value)}
+                  placeholder="Nombre de la etiqueta"
+                />
+                <div className="edit-buttons">
+                  <button
+                    className="btn-success"
+                    onClick={() => handleGuardarEdicion(etiqueta.id)}
+                  >
+                    Guardar
+                  </button>
+                  <button
+                    className="btn-cancel"
+                    onClick={handleCancelarEdicion}
+                  >
+                    Cancelar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Modo vista normal
+              <>
+                <div className="etiqueta-info">
+                  <span className="etiqueta-nombre">{etiqueta.nombre}</span>
+                  <span className="etiqueta-fecha">
+                    Creada: {new Date(etiqueta.created_at).toLocaleDateString()}
+                  </span>
+                </div>
+                <div className="etiqueta-actions">
+                  <button
+                    className="btn-edit"
+                    onClick={() => handleEditarClick(etiqueta)}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    className="btn-delete"
+                    onClick={() => handleDelete(etiqueta.id)}
+                  >
+                    ×
+                  </button>
+                </div>
+              </>
+            )}
+
           </div>
         ))}
+
+        {etiquetas.length === 0 && (
+          <p className="no-etiquetas">No hay etiquetas aún. ¡Crea una!</p>
+        )}
       </div>
     </div>
   );
